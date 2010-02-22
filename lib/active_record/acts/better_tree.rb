@@ -12,6 +12,7 @@ module ActiveRecord
           
           belongs_to :parent, :class_name => name, :foreign_key => :parent_id, :counter_cache => configuration[:counter_cache]
           has_many :children, {:class_name => name, :foreign_key => :parent_id, :order => configuration[:order]}.merge(configuration[:destroy_dependent] ? {:dependent => :destroy} : {}), &b
+          has_many :parents_children, {:class_name => name, :primary_key => :parent_id, :foreign_key => :parent_id, :order => configuration[:order]}, &b
           
           named_scope :roots, :order => configuration[:order], :conditions => {:parent_id => nil}
           after_save                 :assign_csv_ids
@@ -78,7 +79,11 @@ module ActiveRecord
         end
         
         def self_and_siblings
-          (@self_and_siblings ||= self.class.find(:all, :order => configuration[:order], :conditions => {:parent_id => self.parent_id}))
+          unless parent_id.blank?
+            self.parents_children
+          else
+            self.class.roots
+          end
         end
         
         def ancestor_of?(node)
