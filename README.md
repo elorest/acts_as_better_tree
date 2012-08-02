@@ -1,6 +1,6 @@
 # ActsAsBetterTree
 
-An alternative to nested_sets and acts_as_tree. Designed to be a drop in replacement for acts_as_tree. Replaces betternestedset without the slow inserts when dealing with a large dataset. Used by upillar.com on a dataset of over 900,000 categories with no slow downs. In tests it shows a 285% speed increase on inserts with a dataset of 100k categories. As datasets become larger its insert speed stays about the same when nested_sets become slower. In all of my tests read speeds have been comparable with nested sets on everything but all_children which takes is inperceptibly slower on a dataset of 100k than betternestedset.
+An alternative to nested_sets and acts_as_tree. Designed to be a drop in replacement for acts_as_tree. Replaces betternestedset without the slow inserts when dealing with a large dataset. Used by upillar.com on a dataset of over 900,000 categories with no slow downs. In tests it shows a 285% speed increase on inserts with a dataset of 100k categories. As datasets become larger its insert speed stays about the same when nested_sets become slower. In all of my tests read speeds have been comparable with nested sets on everything but all_children which is inperceptibly slower on a dataset of 100k than betternestedset.
 
 
 ## Installation
