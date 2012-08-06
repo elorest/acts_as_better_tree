@@ -28,7 +28,7 @@ Or install it yourself as:
      t.column :name, :string
     end
 
-    If upgrading from acts_as_tree just add root_id and csv_ids and run Category.build_csv_ids!
+    If upgrading from acts_as_tree just add root_id and csv_ids and run Category.tree_to_better_tree!
 
     class Category < ActiveRecord::Base
         acts_as_better_tree :order => "name"
@@ -48,8 +48,19 @@ Or install it yourself as:
     child1.parent # => root
     root.children # => [child1]
     root.children.first.children.first # => subchild1
+    child1.self_and_ancestors # => [root, child1]
+    child1.ancestors
+    child1.siblings
+    child1.self_and_siblings
+    child1.move_to_child_of(parent)
+    child1.childless?
+    child1.ancestor_of?(subchild1)
+    child1.descendant_of?(root)
+    root.to_csv # => "root,child1,subchild1\n" returns and array of all children
+    Category.to_csv # => "root,child1,subchild1\nroot,child1,subchild2\n" returns entire tree in a csv string
 
-Copyright (c) 2008 Isaac Sloan, released under the MIT license
+
+Copyright (c) 2008 Isaac Sloan, released under the MIT license.
 Inspired by David Heinemeier Hansson's acts_as_tree
 
 ## Contributing

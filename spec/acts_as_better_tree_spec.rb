@@ -69,4 +69,7 @@ describe "ActsAsBetterTree" do
     bobcats.parent.name.should eql "Cats"
   end
 
+  it "should return a csv string of all nodes" do
+    Category.to_csv.should eql "Animals,Cats,Lions\nAnimals,Cats,Tiger\nAnimals,Cats,House Cat\nAnimals,Cats,Panther\nAnimals,Cats,Bobcats\n"
+  end
 end

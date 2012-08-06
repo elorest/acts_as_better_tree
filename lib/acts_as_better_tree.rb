@@ -1,5 +1,5 @@
 require "acts_as_better_tree/version"
-
+require "csv"
 module ActiveRecord
   module Acts
     module BetterTree
@@ -27,21 +27,25 @@ module ActiveRecord
               roots(options).first
             end
 
-            def traverse(nodes = self.roots, &block)
+            def recursively_traverse(nodes = self.roots, &block)
               nodes.each do |node|
                 yield node
-                traverse(node.children, &block)
+                recursively_traverse(node.children, &block)
               end
             end
 
             # Call this to upgrade an existing acts_as_tree to acts_as_better_tree
-            def build_csv_ids!(nodes = self.roots)
+            def tree_to_better_tree!(nodes = self.roots)
               transaction do
-                traverse(nodes) do |node|
+                recursively_traverse(nodes) do |node|
                   node.csv_ids = node.build_csv_ids
                   node.save
                 end
               end
+            end
+
+            def to_csv
+              return new.to_csv(roots)
             end
           end
         end
@@ -123,12 +127,12 @@ module ActiveRecord
           csv = []
           nodes.each do |node|
             if node.childless?
-              csv += [node.self_and_ancestors.map(&:name).join(",")]
+              csv += [node.self_and_ancestors.map(&:name).to_csv]
             else
               csv += [to_csv(node.children)]
             end
           end
-          return csv.join("\n")
+          return csv.join("")
         end
 
         def build_csv_ids

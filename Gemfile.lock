@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    acts_as_better_tree (0.0.1)
+    acts_as_better_tree (0.9.4)
 
 GEM
   remote: https://rubygems.org/
