@@ -172,12 +172,6 @@ module ActiveRecord
   end
 end
 
-#ActiveRecord::Base.send :include, ActiveRecord::Acts::BetterTree
-#
-#ActiveRecord::Base.class_eval do
-#  include ActiveRecord::Acts::BetterTree
-#end
-
 class ActiveRecord::Base
   include ActiveRecord::Acts::BetterTree
 end
