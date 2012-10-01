@@ -61,6 +61,7 @@ Or install it yourself as:
 
 
 Copyright (c) 2008 Isaac Sloan, released under the MIT license.
+
 Inspired by David Heinemeier Hansson's acts_as_tree
 
 ## Contributing
