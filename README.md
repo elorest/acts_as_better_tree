@@ -19,7 +19,7 @@ Or install it yourself as:
 
 ## Usage
 
-    Required fields are parent_id, root_id, csv_ids.
+  Required fields are parent_id, root_id, csv_ids.
 
     create_table :categories do |t|
      t.column :root_id, :integer
@@ -28,7 +28,7 @@ Or install it yourself as:
      t.column :name, :string
     end
 
-    If upgrading from acts_as_tree just add root_id and csv_ids and run Category.tree_to_better_tree!
+  If upgrading from acts_as_tree just add root_id and csv_ids and run Category.tree_to_better_tree!
 
     class Category < ActiveRecord::Base
         acts_as_better_tree :order => "name"
@@ -61,7 +61,6 @@ Or install it yourself as:
 
 
 Copyright (c) 2008 Isaac Sloan, released under the MIT license.
-
 Inspired by David Heinemeier Hansson's acts_as_tree
 
 ## Contributing
