@@ -8,15 +8,15 @@ module ActiveRecord
       end
 
       module ClassMethods
-        def acts_as_better_tree(options = {}, &b)
+        def acts_as_better_tree(options = {})
           configuration = {:order => "id ASC", :destroy_dependent => true }
           configuration.update(options) if options.is_a?(Hash)
 
           belongs_to :parent, :class_name => name, :foreign_key => :parent_id
-          has_many :children, {:class_name => name, :foreign_key => :parent_id, :order => configuration[:order]}.merge(configuration[:destroy_dependent] ? {:dependent => :destroy} : {}), &b
-          has_many :parents_children, {:class_name => name, :primary_key => :parent_id, :foreign_key => :parent_id, :order => configuration[:order]}, &b
+          has_many :children, -> {order(configuration[:order])}, {:class_name => name, :foreign_key => :parent_id}.merge(configuration[:destroy_dependent] ? {:dependent => :destroy} : {})
+          has_many :parents_children, -> {order(configuration[:order])}, {:class_name => name, :primary_key => :parent_id, :foreign_key => :parent_id}
           belongs_to :root, :class_name => name, :foreign_key => :root_id
-          scope :roots, :order => configuration[:order], :conditions => {:parent_id => nil}
+          scope :roots, -> {order(configuration[:order]).where(:parent_id => nil)}
           after_create       :assign_csv_ids
           after_validation  :update_csv_ids, :on => :update
 
@@ -161,11 +161,11 @@ module ActiveRecord
         end
 
         def update_csv_ids
-          return unless parent_foreign_key_changed?
+          return unless parent_foreign_key_changed? 
           old_csv_ids = self.csv_ids
           self.csv_ids = build_csv_ids
           self.root_id = build_root_id
-          self.class.update_all("csv_ids = Replace(csv_ids, '#{old_csv_ids},', '#{self.csv_ids},'), root_id = #{self.root_id}", "csv_ids like '#{old_csv_ids},%'")
+          self.class.where("csv_ids like '#{old_csv_ids},%'").update_all("csv_ids = Replace(csv_ids, '#{old_csv_ids},', '#{self.csv_ids},'), root_id = #{self.root_id}") unless self.new_record?
         end
       end
     end
