@@ -1,5 +1,4 @@
 require "acts_as_better_tree/version"
-require "csv"
 module ActiveRecord
   module Acts
     module BetterTree
@@ -12,10 +11,26 @@ module ActiveRecord
           configuration = {:order => "id ASC", :destroy_dependent => true }
           configuration.update(options) if options.is_a?(Hash)
 
-          belongs_to :parent, :class_name => name, :foreign_key => :parent_id
-          has_many :children, -> {order(configuration[:order])}, {:class_name => name, :foreign_key => :parent_id}.merge(configuration[:destroy_dependent] ? {:dependent => :destroy} : {})
-          has_many :parents_children, -> {order(configuration[:order])}, {:class_name => name, :primary_key => :parent_id, :foreign_key => :parent_id}
-          belongs_to :root, :class_name => name, :foreign_key => :root_id
+          belongs_to :parent, 
+            class_name: name, 
+            foreign_key: :parent_id, 
+            optional: true,
+            dependent: :destroy
+          has_many :children, 
+            -> { order(configuration[:order]) }, 
+            class_name: name, 
+            foreign_key: :parent_id, 
+            dependent: configuration[:destroy_dependent] ? :destroy : nil
+          has_many :parents_children,
+            -> { order(configuration[:order]) },
+            class_name: name,
+            primary_key: :parent_id,
+            foreign_key: :parent_id
+          belongs_to :root, 
+            class_name: name, 
+            foreign_key: :root_id, 
+            optional: true,
+            dependent: :destroy
           scope :roots, -> {order(configuration[:order]).where(:parent_id => nil)}
           after_create       :assign_csv_ids
           after_validation  :update_csv_ids, :on => :update
@@ -116,11 +131,11 @@ module ActiveRecord
         end
 
         def move_to_child_of(category)
-          self.update_attributes(:parent_id => category.id)
+          self.update(parent_id: category.id)
         end
 
         def make_root
-          self.update_attributes(:parent_id => nil)
+          self.update(parent_id: nil)
         end
 
         def to_csv(nodes = self.children)
@@ -157,7 +172,7 @@ module ActiveRecord
         end
 
         def assign_csv_ids
-          self.update_attributes(:csv_ids => build_csv_ids, :root_id => build_root_id)
+          self.update(csv_ids: build_csv_ids, root_id: build_root_id)
         end
 
         def update_csv_ids
