@@ -13,9 +13,7 @@ module ActiveRecord
 
           belongs_to :parent, 
             class_name: name, 
-            foreign_key: :parent_id, 
-            optional: true,
-            dependent: :destroy
+            foreign_key: :parent_id
           has_many :children, 
             -> { order(configuration[:order]) }, 
             class_name: name, 
