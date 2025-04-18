@@ -1,6 +1,9 @@
 require 'spec_helper'
 
-ActiveRecord::Base::establish_connection(:adapter => "sqlite3", :dbfile => ":memory:", :database => "gemtest")
+ActiveRecord::Base.establish_connection(
+  adapter: 'sqlite3',
+  database: ':memory:'
+)
 $stdout = StringIO.new
 
 def setup_db
@@ -71,5 +74,44 @@ describe "ActsAsBetterTree" do
 
   it "should return a csv string of all nodes" do
     Category.to_csv.should eql "Animals,Cats,Lions\nAnimals,Cats,Tiger\nAnimals,Cats,House Cat\nAnimals,Cats,Panther\nAnimals,Cats,Bobcats\n"
+  end
+
+  context "when there are multiple category roots" do
+    before do
+      baseball = Category.create(name: "baseball")
+      basketball = Category.create(name: "basketball")
+      football = Category.create(name: "football")
+      Category.create(name: "minor", :parent => baseball)
+      Category.create(name: "major", :parent => baseball)
+      Category.create(name: "minor", :parent => basketball)
+      Category.create(name: "major", :parent => basketball)
+      Category.create(name: "minor", :parent => football)
+      Category.create(name: "major", :parent => football)
+
+    end
+    context "and the category root is deleted" do
+      it "should also remove its children" do
+        category = Category.find_by_name("football")
+        category.children.count.should eql 2
+        category.destroy
+
+        Category.find_by_name("football").should eql nil
+        Category.find_by_name("basketball").children.should_not eql nil
+        Category.find_by_name("baseball").children.should_not eql nil
+      end
+    end
+
+    context "and a non category root is deleted" do
+      it "should remove only its children" do
+        category = Category.find_by_name("football")
+        minor = category.children.find_by_name("minor")
+        minor.children.create(:name => "topps")
+
+        minor.destroy
+        category.children.find_by_name("minor").should eql nil
+        Category.find_by_name("basketball").children.should_not eql nil
+        Category.find_by_name("baseball").children.should_not eql nil
+      end
+    end
   end
 end

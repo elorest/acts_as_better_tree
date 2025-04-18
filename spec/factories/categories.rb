@@ -1,10 +1,10 @@
-FactoryGirl.define do
+FactoryBot.define do
     factory :animals, class: Category do
-      name "animals"
+      name { "animals" }
     end
 
     factory :cats, class: Category do
-      name "cats"
+      name { "cats" }
       association :parent, factory: :animals, strategy: :build
     end
 end
