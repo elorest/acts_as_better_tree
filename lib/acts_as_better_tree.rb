@@ -1,4 +1,5 @@
 require "acts_as_better_tree/version"
+require "csv"
 module ActiveRecord
   module Acts
     module BetterTree
