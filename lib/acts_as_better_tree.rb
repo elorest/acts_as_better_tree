@@ -29,8 +29,7 @@ module ActiveRecord
           belongs_to :root, 
             class_name: name, 
             foreign_key: :root_id, 
-            optional: true,
-            dependent: :destroy
+            optional: true
           scope :roots, -> {order(configuration[:order]).where(:parent_id => nil)}
           after_create       :assign_csv_ids
           after_validation  :update_csv_ids, :on => :update
